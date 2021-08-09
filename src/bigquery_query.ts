@@ -529,7 +529,14 @@ export default class BigQueryQuery {
     if (this.hll !== undefined) {
       query = '\nSELECT \n' + outerQuery + ' from \n(' + query + ') ' + outerGroupBy + orderBy;
     }
-    query = '#standardSQL' + query;
+
+    //TODO M@ apply downsampling
+    query = '\nSELECT * FROM (\n' + query + '\n) ORDER BY MD5(STRING(time)) LIMIT 1000 '
+
+    // TODO Check this... what is hll? Might not want order by'
+    query = '\nSELECT * FROM (\n' + query + '\n) ORDER BY 1 '
+
+    query = '#standardDownSampled3' + query;
     return query;
   }
 
